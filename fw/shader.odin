@@ -2,6 +2,7 @@ package fw
 
 import gl "vendor:OpenGL"
 import "core:os"
+import "core:fmt"
 
 
 Shader :: struct
@@ -10,16 +11,18 @@ Shader :: struct
 }
 
 
-Shader^ create_shader :: proc(vsh_path: string, fsh_path: string) {
+create_shader :: proc(vsh_path: string, fsh_path: string) -> Shader {
 
-    shader := Shader {}
+    shader := Shader {
+        gl.CreateProgram()
+    }
 
     // CREATE SHADER PROGRAM
-    shaderProgram := gl.CreateProgram()
+    //shader.program := gl.CreateProgram()
 
     //Shader* program = malloc(sizeof(Shader));
 
-    shader.program := shaderProgram;
+    //shader.program := shaderProgram;
 
     /*printf("Shader program: %s \n", vsh);*/
 
@@ -53,7 +56,8 @@ load_shader_source :: proc(vertex_shader_path: string, fragment_shader_path: str
     //---------- VERTEX SHADER
     vertex_shader_object := gl.CreateShader(gl.VERTEX_SHADER)
 
-    vertex_shader_source := os.read_entire_file(vertex_shader_path)
+    vertex_shader_source, vsh_ok := os.read_entire_file(vertex_shader_path)
+
 
     // TODO READ VERTEX SHADER FILE
 
@@ -61,13 +65,13 @@ load_shader_source :: proc(vertex_shader_path: string, fragment_shader_path: str
     gl.CompileShader(vertex_shader_object)
 
     //---------- FRAMGMENT SHADER
-    framgment_shader_object := gl.CreateShader(gl.FRAGMENT_SHADER)
-    framgment_shader_source := os.read_entire_file(fragment_shader_path)
+    fragment_shader_object := gl.CreateShader(gl.FRAGMENT_SHADER)
+    fragment_shader_source, fsh_ok := os.read_entire_file(fragment_shader_path)
 
     // TODO READ FRAGMENT SHADER FILE
 
-    gl.ShaderSource(framgment_shader_object, 1, framgment_shader_source, nil )
-    gl.CompileShader(framgment_shader_object)
+    gl.ShaderSource(fragment_shader_object, 1, cast([^]cstring)fragment_shader_source, nil )
+    gl.CompileShader(fragment_shader_object)
 
-    return vertex_shader_object, framgment_shader_object
+    return vertex_shader_object, fragment_shader_object
 }
