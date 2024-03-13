@@ -13,65 +13,65 @@ Shader :: struct
 
 create_shader :: proc(vsh_path: string, fsh_path: string) -> Shader {
 
-    shader := Shader {
-        gl.CreateProgram()
-    }
+    shader := Shader {}
+    shader.program = gl.CreateProgram()
 
-    // CREATE SHADER PROGRAM
-    //shader.program := gl.CreateProgram()
+    vertex_shader_object   : u32
+    fragment_shader_object : u32
 
-    //Shader* program = malloc(sizeof(Shader));
+    load_shader(vsh_path, gl.VERTEX_SHADER, &vertex_shader_object)
+    load_shader(fsh_path, gl.FRAGMENT_SHADER, &fragment_shader_object)
 
-    //shader.program := shaderProgram;
+    gl.AttachShader(shader.program, vertex_shader_object)
+    gl.AttachShader(shader.program, fragment_shader_object)
 
-    /*printf("Shader program: %s \n", vsh);*/
-
-    vertex_shader, fragment_shader := load_shader_source(vsh_path, fsh_path)
-
-    //gl.AttachShader(shader.program, vertex_shader)
-
-    //glAttachShader(program->program, vertexObject);
-    //glAttachShader(program->program, fragmentObject);
-
-    //GLint success;
-
-    //glLinkProgram(program->program);
-
-    ///*printf("Shader Linking Error. \n");*/
-    //CheckCompileErrors(program->program, GL_LINK_STATUS, 0);
-
-    //printf("Shader Validating. \n");
-    //glValidateProgram(program->program);
-
-    //free((char*)vertexSource);
-    //free((char*)fragmentSource);
-
-    //return shader;
-
-
+    gl.LinkProgram(shader.program)
+    
+    return shader
 }
 
-load_shader_source :: proc(vertex_shader_path: string, fragment_shader_path: string) -> (vertex_shader: u32, fragment_shader: u32)
+load_shader :: proc(shader_path: string, shader_type: u32, shader_object: ^u32)
 {
-    //---------- VERTEX SHADER
+    shader_object^ = gl.CreateShader(shader_type)
+    shader_source, ok := os.read_entire_file(shader_path)
+    
+    if(!ok) {
+        fmt.println("Error loading VERTEX SHADER source")
+    }
+
+    length :i32 = i32(len(shader_source))
+    data := cstring(raw_data(shader_source))
+
+    gl.ShaderSource(shader_object^, 1, &data, &length)
+    gl.CompileShader(shader_object^)
+}
+
+
+load_vertex_source :: proc(vertex_shader_object: ^u32, shader_path:string, shader: ^Shader) {
     vertex_shader_object := gl.CreateShader(gl.VERTEX_SHADER)
+    vertex_source, ok := os.read_entire_file(shader_path)
+    
+    if(!ok) {
+        fmt.println("Error loading VERTEX SHADER source")
+    }
 
-    vertex_shader_source, vsh_ok := os.read_entire_file(vertex_shader_path)
+    length :i32 = i32(len(vertex_source))
+    vertex_data := cstring(raw_data(vertex_source))
 
-
-    // TODO READ VERTEX SHADER FILE
-
-    gl.ShaderSource(vertex_shader_object, 1, vertex_shader_source, nil )
+    gl.ShaderSource(vertex_shader_object, 1, &vertex_data, &length)
     gl.CompileShader(vertex_shader_object)
+}
 
-    //---------- FRAMGMENT SHADER
+load_fragment_source :: proc(fragment_shader_object: ^u32, shader_path:string, shader: ^Shader) {
     fragment_shader_object := gl.CreateShader(gl.FRAGMENT_SHADER)
-    fragment_shader_source, fsh_ok := os.read_entire_file(fragment_shader_path)
+    fragment_source, ok := os.read_entire_file(shader_path)
 
-    // TODO READ FRAGMENT SHADER FILE
+    if(!ok) {
+        fmt.println("Error loading FRAGMENT SHADER source")
+    }
 
-    gl.ShaderSource(fragment_shader_object, 1, cast([^]cstring)fragment_shader_source, nil )
+    length :i32 = i32(len(fragment_source))
+    fragment_data := cstring(raw_data(fragment_source))
+    gl.ShaderSource(fragment_shader_object, 1, &fragment_data, &length)
     gl.CompileShader(fragment_shader_object)
-
-    return vertex_shader_object, fragment_shader_object
 }
