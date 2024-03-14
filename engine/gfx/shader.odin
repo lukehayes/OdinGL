@@ -10,7 +10,7 @@ Shader :: struct
     program : u32
 }
 
-use_shader :: proc(shader: ^Shader) {
+use_shader :: proc(shader: Shader) {
     gl.UseProgram(shader.program)
 }
 
