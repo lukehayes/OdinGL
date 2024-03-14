@@ -1,4 +1,4 @@
-package fw
+package engine
 
 import gl "vendor:OpenGL"
 import "core:os"

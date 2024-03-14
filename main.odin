@@ -1,50 +1,51 @@
 package main
 
 import "core:fmt"
-import "core:c"
-
+import "core:time"
 import gl "vendor:OpenGL"
-import "vendor:glfw"
-import "fw"
+import SDL "vendor:sdl2"
 
-PROGRAMNAME :: "Program"
-
-WIDTH :: 800
-HEIGHT :: 600
-
-GL_MAJOR_VERSION : c.int : 4
-GL_MINOR_VERSION :: 6
+import "engine"
+import "engine/gfx"
 
 running : b32 = true
 
 main :: proc() {
 
-	window := fw.initialize()
+    window := engine.create_window("Hello", 10,100)
 
+    start_tick := time.tick_now()
 
-	glfw.SetKeyCallback(window, key_callback)
+	loop: for {
 
-	//init()
-
-	ctx := fw.GLContext {}
-	fw.init_vertex_array(&ctx)
-	fw.init_vertex_buffer(&ctx)
-	fw.set_buffer_data(&ctx)
-
-	for (!glfw.WindowShouldClose(window) && running) {
+		duration := time.tick_since(start_tick)
+		t := f32(time.duration_seconds(duration))
 		
-		glfw.PollEvents()
+		// event polling
+		event: SDL.Event
+		for SDL.PollEvent(&event) != false {
+			// #partial switch tells the compiler not to error if every case is not present
+			#partial switch event.type {
+			case .KEYDOWN:
+				#partial switch event.key.keysym.sym {
+				case .ESCAPE:
+					// labelled control flow
+					break loop
+				}
+			case .QUIT:
+				// labelled control flow
+				break loop
+			}
+		}
 		
-		update()
-		draw()
 		
-		glfw.SwapBuffers((window))
+        //draw()
+		SDL.GL_SwapWindow(window)		
 	}
 
-	defer glfw.Terminate()
-	defer glfw.DestroyWindow(window)
+	defer SDL.DestroyWindow(window)
 
-	exit()
+
 }
 
 
@@ -55,21 +56,6 @@ update :: proc(){
 }
 
 draw :: proc(){
-	gl.ClearColor(0.2, 0.3, 0.7, 1.0)
-	gl.Clear(gl.COLOR_BUFFER_BIT)
-}
-
-exit :: proc(){
-	
-}
-
-key_callback :: proc "c" (window: glfw.WindowHandle, key, scancode, action, mods: i32) {
-	if key == glfw.KEY_SPACE {
-		running = false
-	}
-}
-
-
-size_callback :: proc "c" (window: glfw.WindowHandle, width, height: i32) {
-	gl.Viewport(0, 0, width, height)
+    gl.ClearColor(0.3, 0.3, 0.7, 1.0)
+    gl.Clear(gl.COLOR_BUFFER_BIT)
 }
