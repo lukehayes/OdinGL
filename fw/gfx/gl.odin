@@ -3,7 +3,7 @@ package fw
 import gl "vendor:OpenGL"
 import "core:math/rand"
 
-GLContext :: struct 
+GLContext :: struct
 {
     vertex_array : u32,
     vertex_buffer : u32,
