@@ -10,6 +10,9 @@ Shader :: struct
     program : u32
 }
 
+use_shader :: proc(shader: ^Shader) {
+    gl.UseProgram(shader.program)
+}
 
 create_shader :: proc(vsh_path: string, fsh_path: string) -> Shader {
 
