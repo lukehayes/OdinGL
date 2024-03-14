@@ -1,4 +1,4 @@
-package engine
+package gfx
 
 import gl "vendor:OpenGL"
 import "core:os"

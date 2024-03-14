@@ -1,7 +1,10 @@
-package fw
+package gfx
 
 import gl "vendor:OpenGL"
 import "core:math/rand"
+import "core:fmt"
+
+VERTEX_COUNT :: 100
 
 GLContext :: struct
 {
@@ -18,44 +21,37 @@ Vertex :: struct
 
 init_vertex_array ::proc(glcontext: ^GLContext)
 {
-    vao : u32
-    gl.GenVertexArrays(1, &vao)
-    gl.BindVertexArray(vao)
-
-    glcontext.vertex_array = vao;
+    gl.GenVertexArrays(1, &glcontext.vertex_array)
+    gl.BindVertexArray(glcontext.vertex_array)
 }
 
 init_vertex_buffer ::proc(glcontext: ^GLContext)
 {
-    vbo : u32
-    gl.GenBuffers(1, &vbo)
-    gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
+    gl.GenBuffers(1, &glcontext.vertex_buffer)
+    gl.BindBuffer(gl.ARRAY_BUFFER, glcontext.vertex_buffer)
 
-    glcontext.vertex_buffer = vbo;
+    //glcontext.vertex_buffer = vbo;
 }
 
 set_buffer_data :: proc(glcontext: ^GLContext)
 {
-    gl.EnableVertexArrayAttrib(glcontext.vertex_array, 0)
+    gl.EnableVertexAttribArray(0)
 
-    vertices := []Vertex{
-        {{-0.5, +0.5, 0}, {1.0, 0.0, 0.0, 0.75}},
-        {{-0.5, -0.5, 0}, {1.0, 1.0, 0.0, 0.75}},
-        {{+0.5, -0.5, 0}, {0.0, 1.0, 0.0, 0.75}},
-        {{+0.5, +0.5, 0}, {0.0, 0.0, 1.0, 0.75}},
+    vertices : [dynamic]f32
+
+    for i in 0..< VERTEX_COUNT
+    {
+        v := rand.float32_range(-1.0, +1.0)
+        append(&vertices, v)
     }
 
-    //gl.BindVertexArray(0)
+    fmt.println(vertices)
 
-    //vertices : [9]f32
-
-    //for i in 0..<8
-    //{
-        //v := rand.float32_range(0,1)
-        //vertices[i] = v
-    //}
-
-    gl.BufferData(gl.ARRAY_BUFFER, len(vertices)*size_of(vertices[0]), raw_data(vertices), gl.STATIC_DRAW)
+    gl.BufferData(gl.ARRAY_BUFFER,
+        len(vertices) * size_of(vertices[0]), 
+        raw_data(vertices),
+        gl.STATIC_DRAW,
+    )
 
     //gl.BufferData(
     //gl.ARRAY_BUFFER,

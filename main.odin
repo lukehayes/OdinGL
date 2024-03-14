@@ -14,6 +14,21 @@ main :: proc() {
 
     window := engine.create_window("Hello", 10,100)
 
+	// -- OPENGL START
+
+	gfx_context := gfx.GLContext {}
+
+	gfx.init_vertex_array(&gfx_context)
+	gfx.init_vertex_buffer(&gfx_context)
+	gfx.set_buffer_data(&gfx_context)
+
+	shader := gfx.create_shader(
+		"assets/shaders/passthru-vsh.glsl",
+		"assets/shaders/passthru-fsh.glsl",
+	)
+
+	// -- OPENGL END
+
     start_tick := time.tick_now()
 
 	loop: for {
@@ -31,6 +46,9 @@ main :: proc() {
 				case .ESCAPE:
 					// labelled control flow
 					break loop
+
+				case .SPACE:
+					fmt.println("Pressed")
 				}
 			case .QUIT:
 				// labelled control flow
@@ -39,7 +57,11 @@ main :: proc() {
 		}
 		
 		
-        //draw()
+		draw()
+	
+		gl.UseProgram(shader.program)
+		gl.DrawArrays(gl.POINTS, 0, gfx.VERTEX_COUNT)
+
 		SDL.GL_SwapWindow(window)		
 	}
 
