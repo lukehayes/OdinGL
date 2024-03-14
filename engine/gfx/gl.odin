@@ -8,7 +8,7 @@ GLContext :: struct
 {
     vertex_array : u32,
     vertex_buffer : u32,
-    shader : int,
+    shader : Shader,
 }
 
 Vertex :: struct
