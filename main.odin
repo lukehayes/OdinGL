@@ -12,7 +12,7 @@ running : b32 = true
 
 main :: proc() {
 
-    window := engine.create_window("Hello", 10,100)
+    window := engine.create_window("Hello", 1920, 1080)
 
 	// -- OPENGL START
 
@@ -58,9 +58,9 @@ main :: proc() {
 		
 		
 		draw()
-	
+
 		gl.UseProgram(shader.program)
-		gl.DrawArrays(gl.POINTS, 0, gfx.VERTEX_COUNT)
+		gl.DrawArrays(gl.LINES, 0, #config(VERTEX_COUNT, 2))
 
 		SDL.GL_SwapWindow(window)		
 	}

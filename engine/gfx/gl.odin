@@ -4,8 +4,6 @@ import gl "vendor:OpenGL"
 import "core:math/rand"
 import "core:fmt"
 
-VERTEX_COUNT :: 100
-
 GLContext :: struct
 {
     vertex_array : u32,
@@ -37,25 +35,33 @@ set_buffer_data :: proc(glcontext: ^GLContext)
 {
     gl.EnableVertexAttribArray(0)
 
+    //vertices := [9]f32 {
+    //-0.5, -0.5, 0.0,
+     //0.5, -0.5, 0.0,
+     //0.0,  0.5, 0.0,
+    //}
+
     vertices : [dynamic]f32
 
-    for i in 0..< VERTEX_COUNT
+    for i in 0..< #config(VERTEX_COUNT, 2)
     {
         v := rand.float32_range(-1.0, +1.0)
         append(&vertices, v)
     }
 
-    fmt.println(vertices)
-
-    gl.BufferData(gl.ARRAY_BUFFER,
+    gl.BufferData(
+        gl.ARRAY_BUFFER,
         len(vertices) * size_of(vertices[0]), 
         raw_data(vertices),
         gl.STATIC_DRAW,
     )
 
-    //gl.BufferData(
-    //gl.ARRAY_BUFFER,
-    //9,
-    //&vertices,
-    //)
+    gl.VertexAttribPointer(
+        0,
+        2,
+        gl.FLOAT,
+        false,
+        size_of(vertices),
+        0,
+    )
 }
