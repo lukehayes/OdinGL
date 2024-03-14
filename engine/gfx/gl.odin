@@ -65,3 +65,11 @@ set_buffer_data :: proc(glcontext: ^GLContext)
         0,
     )
 }
+
+destroy_buffers :: proc(glcontext: ^GLContext)
+{
+    defer gl.DeleteBuffers(1, &glcontext.vertex_array);
+    defer gl.DeleteBuffers(1, &glcontext.vertex_buffer);
+
+    defer gl.DeleteProgram(glcontext.shader.program)
+}
